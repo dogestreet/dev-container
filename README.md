@@ -1,7 +1,8 @@
-Sets up a runc container with networking with folders bind mounted from the host
+# Dev container
+Sets up a development container with networking and folders bind mounted from the host
 
-Container is set up with a process namespace, network namespace, etc.
 Processes inside has no access to host except through the bind mounted folders.
+Container is set up with a process namespace, network namespace, etc.
 Network is provided via a domain socket which the container uses by setting a transparent proxy.
 GUI programs work by passing through a Wayland socket and setting environmental variables.
 
@@ -108,7 +109,7 @@ Add this back in:
 9. Container is ready to use
 
 ```
-[user@host] $ ./start.sh
+[user@host] $ ./run.sh
 [root@dev]# ./start.sh
 [user@dev]$ 
 ```
@@ -127,6 +128,7 @@ Add any work folders to the container by adding more bind mounts to your config:
     }
 ```
 You can also access any files directly on the host thru `rootfs/` folder.
+See `nvidia.md` for passing over NVIDIA graphics devices.
 
 ## Usage
 The first shell that launches the container starts as `root`, the container has `no_new_privs` set. There is no root access except from this shell. If you drop your privs by running `start.sh`, you can Ctrl-D back out to become `root` again.
