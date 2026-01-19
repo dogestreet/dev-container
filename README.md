@@ -1,12 +1,13 @@
 # Dev container
-Sets up a development container with networking and folders bind mounted from the host.
+Set up a development container with networking and folders bind mounted from the host.
+The only dependency is [runc](github.com/opencontainers/runc) and docker is used to generate the rootfs but is not required for running.
 
 Processes inside has no access to host except through the bind mounted folders.
 Container is set up with a process namespace, network namespace, etc.
-It is fully isolated except for the bind mounted folders with the host.
+It is fully isolated except for the bind mounted folders that it shares with the host.
 
 Networking is provided via a domain socket which the container uses by setting a transparent proxy.
-The transparent proxy ensure programs that need networking just work without needing to set up proxy configuration.
+The transparent proxy ensure programs just work without needing do additional configuration.
 GUI programs work by passing through a Wayland socket and setting environmental variables.
 
 The set up looks like this
@@ -72,7 +73,7 @@ Edit this section of `config.json`:
 [root@dev]# pacman -Syu curl proxychains socat vim foot firefox git base-devel htop neovim zed llvm clang ripgrep fzf thunar fish iptables-nft foot-terminfo
 ```
 
-6. Create a new user account (the script assumes it is named `user`) for yourself so you won't need to run as `root`.
+6. Create a new user account for yourself so you won't need to run as `root`.
 
 ```
 [root@dev]# useradd -m user
