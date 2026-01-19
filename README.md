@@ -1,9 +1,9 @@
 # Dev container
-Set up a sandboxed development container with networking.
-The only dependency is [runc](github.com/opencontainers/runc). Docker is used to generate the rootfs but is not required for running.
+A minimalistic, sandboxed container with networking that is fully contained within a folder.
+The only dependency is [runc](github.com/opencontainers/runc). Docker is used to generate the rootfs but is not required for execution.
 
 ## Usage
-Once everything is set up, it is just a matter of running:
+Once bootstrapped, it is just a matter of running:
 
 ```
 # Start the container
@@ -18,12 +18,12 @@ You can use `firefox` to open a web browser, and `thunar` to open a file manager
 Additional terminals can also be created.
 
 ## How it works
-Processes inside have no access to host except through the specific bind mounted folders.
-Container is set up with Linux namespaces, it is fully isolated except for the bind mounted folders.
+Processes inside have no access to your host except through the specific bind mounted folders.
+Container is set up with Linux namespaces, it is fully isolated with the exception of the bind mounts.
 
 Access to the internet is provided via a domain socket.
 The transparent proxy ensures network programs just work without needing do additional configuration.
-GUI programs are supported by passing through a Wayland socket and setting the appropiate environmental variables.
+GUI programs are supported by passing through a Wayland socket and setting the appropriate environmental variables.
 
 This allows you have a full development environment contained within a single folder, with no file access other than what you have configured in `config.json`.
 
@@ -146,7 +146,7 @@ Add this back in:
 [user@dev]$ 
 ```
 
-If you run `ip a`, you should only see the dummy adapter.
+If you run `ip a`, you should only see a dummy network adapter.
 
 ```
 [user@dev]$ ip a
@@ -178,7 +178,7 @@ Add any work folders to the container by adding more bind mounts to your config:
     }
 ```
 
-You can also access any files directly on the host thru `rootfs/` folder.
+You can also access any files directly on the host thru the `rootfs/` folder.
 See `nvidia.md` for passing over NVIDIA graphics devices.
 
 ## About
