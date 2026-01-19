@@ -23,22 +23,44 @@ Assumes you are running Wayland, and PulseAudio on your host Linux system.
 1. Copy `config.template.json` into `config.json`
 2. Create rootfs for runc
 ```
-mkdir rootfs/
-docker export $(docker create archlinux:multilib-devel) | tar -C rootfs -xvf -
+[user@host]$ mkdir rootfs/
+[user@host]$ docker export $(docker create archlinux:multilib-devel) | tar -C rootfs -xvf -
 ```
 3. Compile `tproxy` on the host
 
 ```
-cd tproxy
-go build
+[user@host]$ cd tproxy
+[user@host]$ go build
 ```
 
 4. Copy the network setup files into your roofs
 ```
-$ cp files/* rootfs/root/
+[user@host]$ cp files/* rootfs/root/
 ```
 
-5. Start the container (`./run.sh`) without the "network" namespace (`remove the "network" section from `config.json`) and install utilities:
+5. Start the container (`./run.sh`) without the "network" namespace and install utilities:
+
+Remove this section:
+```
+    "linux": {
+        "namespaces": [
+            {
+                "type": "pid"
+            },
+            {
+                "type": "uts"
+            },
+            { <--- Remove this block
+                "type": "network"
+            },
+            {
+                "type": "mount"
+            },
+            {
+                "type": "cgroup"
+            }
+        ],
+```
 
 ```
 [root@dev]# echo "nameserver 1.1.1.1" > /etc/resolv.conf
@@ -60,6 +82,28 @@ I recommend creating a script for it
 ```
 
 8. Ctrl-D out of there and add the "network" namespace back into your runc config.
+
+Add this back in:
+```
+    "linux": {
+        "namespaces": [
+            {
+                "type": "pid"
+            },
+            {
+                "type": "uts"
+            },
+            {
+                "type": "network"
+            },
+            {
+                "type": "mount"
+            },
+            {
+                "type": "cgroup"
+            }
+        ],
+```
 
 9. Container is ready to use
 
