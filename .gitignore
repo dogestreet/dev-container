@@ -1,2 +1,4 @@
 runc-state
 config.json
+rootfs/
+tproxy/tproxy
