@@ -3,7 +3,10 @@ Sets up a development container with networking and folders bind mounted from th
 
 Processes inside has no access to host except through the bind mounted folders.
 Container is set up with a process namespace, network namespace, etc.
-Network is provided via a domain socket which the container uses by setting a transparent proxy.
+It is fully isolated except for the bind mounted folders with the host.
+
+Networking is provided via a domain socket which the container uses by setting a transparent proxy.
+The transparent proxy ensure programs that need networking just work without needing to set up proxy configuration.
 GUI programs work by passing through a Wayland socket and setting environmental variables.
 
 The set up looks like this
@@ -39,9 +42,9 @@ Assumes you are running Wayland, and PulseAudio on your host Linux system.
 [user@host]$ cp files/* rootfs/root/
 ```
 
-5. Start the container (`./run.sh`) without the "network" namespace and install utilities:
+5. Start the container without the "network" namespace and install utilities:
 
-Remove this section:
+Edit this section of `config.json`:
 ```
     "linux": {
         "namespaces": [
@@ -51,8 +54,8 @@ Remove this section:
             {
                 "type": "uts"
             },
-            {                       <--- Remove this block
-                "type": "network"   <---
+            {                       <---
+                "type": "network"   <---  Remove this block
             },                      <---
             {
                 "type": "mount"
@@ -64,6 +67,7 @@ Remove this section:
 ```
 
 ```
+[user@host]$ ./run.sh
 [root@dev]# echo "nameserver 1.1.1.1" > /etc/resolv.conf
 [root@dev]# pacman -Syu curl proxychains socat vim foot firefox git base-devel htop neovim zed llvm clang ripgrep fzf thunar fish iptables-nft foot-terminfo
 ```
@@ -109,7 +113,7 @@ Add this back in:
 9. Container is ready to use
 
 ```
-[user@host] $ ./run.sh
+[user@host]$ ./run.sh
 [root@dev]# ./start.sh
 [user@dev]$ 
 ```
