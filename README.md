@@ -33,29 +33,30 @@ cd tproxy
 go build
 ```
 
-4. Move the setup files into your roofs
+4. Copy the network setup files into your roofs
 ```
-$ mv files/* rootfs/root/
+$ cp files/* rootfs/root/
 ```
 
 5. Start the container (`./run.sh`) without the "network" namespace (`remove the "network" section from `config.json`) and install utilities:
 
 ```
-root@dev # pacman -Syu curl proxychains socat vim foot firefox git base-devel htop neovim zed llvm clang ripgrep fzf thunar fish iptables-nft foot-terminfo
+[root@dev]# echo "nameserver 1.1.1.1" > /etc/resolv.conf
+[root@dev]# pacman -Syu curl proxychains socat vim foot firefox git base-devel htop neovim zed llvm clang ripgrep fzf thunar fish iptables-nft foot-terminfo
 ```
 
 6. Create a new user account (the script assumes it is named `user`) for yourself so you won't need to run as `root`.
 
 ```
-root@dev # useradd -m user
+[root@dev]# useradd -m user
 ```
 
 7. If you need to spawn more terminals from inside the container you can run `foot fish &>/dev/null & disown`.
 I recommend creating a script for it
 
 ```
-root@dev # echo 'foot fish &>/dev/null & disown' > /usr/bin/spawn
-root@dev # chmod +x /usr/bin/spawn
+[root@dev]# echo 'foot fish &>/dev/null & disown' > /usr/bin/spawn
+[root@dev]# chmod +x /usr/bin/spawn
 ```
 
 8. Ctrl-D out of there and add the "network" namespace back into your runc config.
@@ -63,9 +64,9 @@ root@dev # chmod +x /usr/bin/spawn
 9. Container is ready to use
 
 ```
-user@host $ ./start.sh
-root@dev # ./start.sh
-user@dev $ 
+[user@host] $ ./start.sh
+[root@dev]# ./start.sh
+[user@dev]$ 
 ```
 
 ## Customisation
