@@ -26,6 +26,9 @@ Assumes you are running Wayland, and PulseAudio on your host Linux system.
 
 ## Bootstrapping
 1. Copy `config.template.json` into `config.json`
+```
+[user@host]$ cp config.template.json config.json
+```
 2. Create rootfs for runc
 ```
 [user@host]$ mkdir rootfs/
@@ -43,7 +46,7 @@ Assumes you are running Wayland, and PulseAudio on your host Linux system.
 [user@host]$ cp files/* rootfs/root/
 ```
 
-5. Start the container without the "network" namespace and install utilities:
+5. Start the container without the "network" namespace and install utilities
 
 Edit this section of `config.json`:
 ```
@@ -73,7 +76,7 @@ Edit this section of `config.json`:
 [root@dev]# pacman -Syu curl proxychains socat vim foot firefox git base-devel htop neovim zed llvm clang ripgrep fzf thunar fish iptables-nft foot-terminfo
 ```
 
-6. Create a new user account for yourself so you won't need to run as `root`.
+6. Create a new user for yourself so you won't need to run as `root`.
 
 ```
 [root@dev]# useradd -m user
