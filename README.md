@@ -1,5 +1,5 @@
 # Dev container
-Sets up a development container with networking and folders bind mounted from the host
+Sets up a development container with networking and folders bind mounted from the host.
 
 Processes inside has no access to host except through the bind mounted folders.
 Container is set up with a process namespace, network namespace, etc.
@@ -7,8 +7,8 @@ Network is provided via a domain socket which the container uses by setting a tr
 GUI programs work by passing through a Wayland socket and setting environmental variables.
 
 The set up looks like this
-* `config.json` - runc config
-* `run.sh` - runs runc and the proxy server
+* `config.json` - [runc](github.com/opencontainers/runc) config
+* `run.sh` - starts runc and the proxy server for networking
 * `net/` - folder that is bind mounted into the container for networking
 * `rootfs/` - runc rootfs (created by exporting a docker container)
 
@@ -51,9 +51,9 @@ Remove this section:
             {
                 "type": "uts"
             },
-            { <--- Remove this block
-                "type": "network"
-            },
+            {                       <--- Remove this block
+                "type": "network"   <---
+            },                      <---
             {
                 "type": "mount"
             },
@@ -94,9 +94,9 @@ Add this back in:
             {
                 "type": "uts"
             },
-            {
-                "type": "network"
-            },
+            {                      <---
+                "type": "network"  <--- Add this back
+            },                     <---
             {
                 "type": "mount"
             },
@@ -112,6 +112,24 @@ Add this back in:
 [user@host] $ ./run.sh
 [root@dev]# ./start.sh
 [user@dev]$ 
+```
+
+If you run `ip a`, you should only see the dummy adapter.
+
+```
+[user@dev]$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host proto kernel_lo 
+       valid_lft forever preferred_lft forever
+2: dummy0: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/ether 36:db:e6:6f:29:ae brd ff:ff:ff:ff:ff:ff
+    inet 10.0.0.1/24 scope global dummy0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::34db:e6ff:fe6f:29ae/64 scope link proto kernel_ll 
+       valid_lft forever preferred_lft forever
 ```
 
 ## Customisation
