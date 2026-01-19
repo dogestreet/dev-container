@@ -1,14 +1,31 @@
 # Dev container
-Set up a development container with networking and folders bind mounted from the host.
-The only dependency is [runc](github.com/opencontainers/runc) and docker is used to generate the rootfs but is not required for running.
+Set up a sandboxed development container with networking.
+The only dependency is [runc](github.com/opencontainers/runc). Docker is used to generate the rootfs but is not required for running.
 
-Processes inside has no access to host except through the bind mounted folders.
-Container is set up with a process namespace, network namespace, etc.
-It is fully isolated except for the bind mounted folders that it shares with the host.
+## Usage
+Once everything is set up, it is just a matter of running:
 
-Networking is provided via a domain socket which the container uses by setting a transparent proxy.
-The transparent proxy ensure programs just work without needing do additional configuration.
-GUI programs work by passing through a Wayland socket and setting environmental variables.
+```
+# Start the container
+[user@host]$ ./run.sh 
+
+# Login as a user (instead of root)
+[root@dev]# ./start.sh
+[user@dev]$ ...
+```
+
+You can use `firefox` to open a web browser, and `thunar` to open a file manager. You can also install any additional dependencies using the root terminal.
+Additional terminals can also be created.
+
+## How it works
+Processes inside have no access to host except through the specific bind mounted folders.
+Container is set up with Linux namespaces, it is fully isolated except for the bind mounted folders.
+
+Networking is provided via a domain socket in one of the bind mounted folders, which the container uses thru transparent proxy.
+The transparent proxy ensure network programs just work without needing do additional configuration.
+GUI programs are supported by passing through a Wayland socket and setting the appropiate environmental variables.
+
+This allows you have a full development environment contained within a single folder, with no file access other than what you have configured in `config.json`.
 
 The set up looks like this
 * `config.json` - [runc](github.com/opencontainers/runc) config
@@ -18,32 +35,39 @@ The set up looks like this
 
 Inside the container (inside `rootfs/root`):
 * `net-conf.sh` - transparent proxy setup
-* `nfs.conf` - transparent proxy nft config
+* `nft.conf` - transparent proxy nft config
 * `start.sh` - run as a user account
 
 ## Assumptions
 Assumes you are running Wayland, and PulseAudio on your host Linux system.
 
 ## Bootstrapping
+0. Clone the repo
+```
+git clone github.com/dogestreet/dev-container
+```
+
 1. Copy `config.template.json` into `config.json`
 ```
-[user@host]$ cp config.template.json config.json
+cp config.template.json config.json
 ```
+
 2. Create rootfs for runc
 ```
-[user@host]$ mkdir rootfs/
-[user@host]$ docker export $(docker create archlinux:multilib-devel) | tar -C rootfs -xvf -
+mkdir rootfs/
+docker export $(docker create archlinux:multilib-devel) | tar -C rootfs -xvf -
 ```
+
 3. Compile `tproxy` on the host
 
 ```
-[user@host]$ cd tproxy
-[user@host]$ go build
+cd tproxy
+go build
 ```
 
 4. Copy the network setup files into your roofs
 ```
-[user@host]$ cp files/* rootfs/root/
+cp files/* rootfs/root/
 ```
 
 5. Start the container without the "network" namespace and install utilities
@@ -153,9 +177,10 @@ Add any work folders to the container by adding more bind mounts to your config:
         ]
     }
 ```
+
 You can also access any files directly on the host thru `rootfs/` folder.
 See `nvidia.md` for passing over NVIDIA graphics devices.
 
-## Usage
+## About
 The first shell that launches the container starts as `root`, the container has `no_new_privs` set. There is no root access except from this shell. If you drop your privs by running `start.sh`, you can Ctrl-D back out to become `root` again.
 The `tproxy` program is flexible in that the domain socket is the only file that container needs for networking, you can put the other end of the `tproxy` in a more restrictive network sandbox if required.
