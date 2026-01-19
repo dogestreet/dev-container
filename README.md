@@ -21,8 +21,8 @@ Additional terminals can also be created.
 Processes inside have no access to host except through the specific bind mounted folders.
 Container is set up with Linux namespaces, it is fully isolated except for the bind mounted folders.
 
-Networking is provided via a domain socket in one of the bind mounted folders, which the container uses thru transparent proxy.
-The transparent proxy ensure network programs just work without needing do additional configuration.
+Access to the internet is provided via a domain socket.
+The transparent proxy ensures network programs just work without needing do additional configuration.
 GUI programs are supported by passing through a Wayland socket and setting the appropiate environmental variables.
 
 This allows you have a full development environment contained within a single folder, with no file access other than what you have configured in `config.json`.
